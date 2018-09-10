@@ -53,6 +53,8 @@ public class ChartBarView: UIView {
     fileprivate var legendHeight: CGFloat       = 0
     public var axisYWidth: CGFloat              = 80
     public var axisXHeight: CGFloat             = 40
+    public var axisYLinesHidden: Bool           = false
+    public var axisXLinesHidden: Bool           = false
     
     fileprivate var legendItems: [LegendItem]   = []
     fileprivate var bars: [Bar]                 = []
@@ -60,6 +62,7 @@ public class ChartBarView: UIView {
     fileprivate var axisYLabels: [UILabel]      = []
     fileprivate var axisYLines: [UIView]        = []
     fileprivate var axisXLabels: [UILabel]      = []
+    fileprivate var axisXLines: [UIView]        = []
     fileprivate var contentViews: [UIView]      = []
     fileprivate var legendViews: [UIView]       = []
     
@@ -85,19 +88,19 @@ public class ChartBarView: UIView {
     
     // reload data
     public func reloadData(animated: Bool) {
-        self.reloadAxisY()
-        self.reloadAxisX()
         self.reloadContent()
         self.reloadLegend()
+        self.reloadAxisY()
+        self.reloadAxisX()
         self.invalidateLayout(animated: animated)
     }
     
     // invalidate layout
     public func invalidateLayout(animated: Bool) {
-        self.invalidateAxisY(animated: animated)
-        self.invalidateAxisX(animated: animated)
         self.invalidateContent(animated: animated)
         self.invalidateLegend(animated: animated)
+        self.invalidateAxisY(animated: animated)
+        self.invalidateAxisX(animated: animated)
     }
     
     // bars max value
@@ -223,10 +226,13 @@ extension ChartBarView {
             line.backgroundColor = UIColor.groupTableViewBackground
             
             // save reference
-            self.axisYLines.append(line)
             self.axisYLabels.append(label)
-            self.axisYView.addSubview(line)
             self.axisYView.addSubview(label)
+            
+            if !self.axisYLinesHidden {
+                self.axisYLines.append(line)
+                self.axisYView.addSubview(line)
+            }
         }
     }
 }
@@ -279,9 +285,22 @@ extension ChartBarView {
             label.textAlignment = NSTextAlignment.center
             label.text = bar.title
             
+            // line
+            let line: UIView = UIView(frame: CGRect(
+                x: column * itemWidth + (itemWidth / 2),
+                y: -self.contentView.frame.height,
+                width: 1,
+                height: self.contentView.frame.height))
+            line.backgroundColor = UIColor.groupTableViewBackground
+            
             // save reference
-            self.axisXLabels.append(label)
             self.axisXView.addSubview(label)
+            self.axisXLabels.append(label)
+            
+            if !self.axisXLinesHidden {
+                self.axisXLines.append(line)
+                self.axisXView.addSubview(line)
+            }
         }
     }
 }
@@ -356,6 +375,7 @@ extension ChartBarView {
                 
                 self.contentViews.append(view)
                 self.contentView.insertSubview(view, at: 0)
+                self.contentView.superview?.bringSubview(toFront: self.contentView)
             }
         }
         

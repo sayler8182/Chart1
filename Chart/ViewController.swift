@@ -26,6 +26,8 @@ class ViewController: UIViewController {
         let view = ChartBarView(frame: UIScreen.main.bounds)
         view.axisYWidth = 60
         view.axisXHeight = 40
+        view.axisYLinesHidden = false
+        view.axisXLinesHidden = false
         return view
     }()
     fileprivate lazy var refreshButton: UIButton = {
